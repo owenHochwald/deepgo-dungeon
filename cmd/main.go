@@ -9,8 +9,10 @@ import (
 )
 
 const (
-	screenWidth  = 320 * 4
-	screenHeight = 240 * 4
+	screenWidth       = 320 * 4
+	screenHeight      = 240 * 4
+	minRoomSize       = 5
+	maxRecursionDepth = 5
 )
 
 type Game struct {
@@ -21,7 +23,7 @@ type Game struct {
 
 func NewGame() *Game {
 	n := utils.NewNode(0, 0, screenWidth, screenHeight, 0)
-	n.Split(10, 3)
+	n.Split(minRoomSize, maxRecursionDepth)
 
 	rooms := n.GetLeaves()
 

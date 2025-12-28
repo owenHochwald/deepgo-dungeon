@@ -2,6 +2,11 @@ package utils
 
 import "math/rand"
 
+const (
+	tileSize         = 14
+	hallwayVariation = 4
+)
+
 type Rect struct {
 	X, Y, W, H int
 }
@@ -103,16 +108,16 @@ func (n *Node) CreateHallways(hallways *[]Rect) {
 
 	width := bx - ax
 	if width < 0 {
-		*hallways = append(*hallways, Rect{bx, ay, -width + 6, 6})
+		*hallways = append(*hallways, Rect{bx, ay, -width + hallwayVariation, tileSize})
 	} else {
-		*hallways = append(*hallways, Rect{ax, ay, width + 6, 6})
+		*hallways = append(*hallways, Rect{ax, ay, width + hallwayVariation, tileSize})
 	}
 
 	height := by - ay
 	if height < 0 { // Handle bottom-to-top
-		*hallways = append(*hallways, Rect{bx, by, 6, -height + 6})
+		*hallways = append(*hallways, Rect{bx, by, tileSize, -height + hallwayVariation})
 	} else {
-		*hallways = append(*hallways, Rect{bx, ay, 6, height + 6})
+		*hallways = append(*hallways, Rect{bx, ay, tileSize, height + hallwayVariation})
 	}
 
 	n.Left.CreateHallways(hallways)
