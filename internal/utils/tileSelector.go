@@ -58,28 +58,20 @@ func LoadTileSet(basePath string) (*TileSet, error) {
 	return ts, nil
 }
 
-func DrawDungeon(screen *ebiten.Image, grid [][]TileType, ts *TileSet) {
-	height := len(grid)
-	if height == 0 {
-		return
-	}
-	width := len(grid[0])
-
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			// Deterministic "random" index based on coordinates
-			idx := x*31 + y*17
-
+func DrawDungeon(screen *ebiten.Image, visualGrid [][]VisualTile, ts *TileSet) {
+	for y, row := range visualGrid {
+		for x, tile := range row {
 			var img *ebiten.Image
-			switch grid[y][x] {
+
+			switch tile.Type {
 			case Void:
-				img = ts.Void[idx%len(ts.Void)]
+				img = ts.Void[tile.Variant]
 			case Floor, Hallway:
-				img = ts.Room[idx%len(ts.Room)]
+				img = ts.Room[tile.Variant]
 			case Wall:
-				img = ts.Wall[idx%len(ts.Wall)]
+				img = ts.Wall[tile.Variant]
 			case Door:
-				img = ts.Door[idx%len(ts.Door)]
+				img = ts.Door[tile.Variant]
 			}
 
 			if img != nil {
@@ -88,9 +80,9 @@ func DrawDungeon(screen *ebiten.Image, grid [][]TileType, ts *TileSet) {
 				screen.DrawImage(img, op)
 			}
 
-			// Decoration Sprites on Room/Hallway w/ 10% chance
-			if (grid[y][x] == Floor || grid[y][x] == Hallway) && (idx%10 == 0) {
-				sImg := ts.Sprite[(idx/10)%len(ts.Sprite)]
+			// Draw decorator on top
+			if tile.Type == Floor && tile.Decorator != -1 {
+				sImg := ts.Sprite[tile.Decorator]
 				op := &ebiten.DrawImageOptions{}
 				op.GeoM.Translate(float64(x*TileSize), float64(y*TileSize))
 				screen.DrawImage(sImg, op)
