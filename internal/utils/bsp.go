@@ -36,9 +36,8 @@ func (n *Node) isLeaf() bool {
 	return n != nil && n.Left == nil && n.Right == nil
 }
 
-func (n *Node) GetCenter() (int, int) {
-	return n.Container.X + n.Container.W/2, n.Container.Y + n.Container.H/2
-
+func GetCenter(x, y, w, h int) (int, int) {
+	return x + w/2, y + h/2
 }
 
 // Split splits the node into two children using random directions and sizes
@@ -76,7 +75,7 @@ func (n *Node) Split(minSize, maxLevel int) bool {
 	return true
 }
 
-func CreateRoom(n *Node) {
+func (n *Node) CreateRoom() {
 	padding := 4
 
 	w := n.Container.W - padding*2
@@ -89,7 +88,20 @@ func CreateRoom(n *Node) {
 		h = rand.Intn(h-5) + 5
 	}
 
-	cX, cY := n.GetCenter()
+	cX, cY := GetCenter(
+		n.Container.X+padding,
+		n.Container.Y+padding,
+		n.Container.W-padding*2,
+		n.Container.H-padding*2,
+	)
+
+	n.Room = &Rect{
+		X: 0,
+		Y: 0,
+		W: 0,
+		H: 0,
+	}
+
 	n.Room = &Rect{
 		X: cX,
 		Y: cY,
@@ -103,8 +115,8 @@ func (n *Node) CreateHallways(hallways *[]Rect) {
 		return
 	}
 
-	ax, ay := n.Left.GetCenter()
-	bx, by := n.Right.GetCenter()
+	ax, ay := GetCenter(n.Left.Container.X, n.Left.Container.Y, n.Left.Container.W, n.Left.Container.H)
+	bx, by := GetCenter(n.Right.Container.X, n.Right.Container.Y, n.Right.Container.W, n.Right.Container.H)
 
 	width := bx - ax
 	if width < 0 {
@@ -123,11 +135,11 @@ func (n *Node) CreateHallways(hallways *[]Rect) {
 	n.Left.CreateHallways(hallways)
 	n.Right.CreateHallways(hallways)
 }
-func (n *Node) GetLeaves() []*Node {
+func (n *Node) GetLeaves() []*Rect {
 	q := Queue{}
 	q.Push(n)
 
-	var children []*Node
+	var children []*Rect
 
 	for len(q) > 0 {
 		curr, err := q.Pop()
@@ -137,7 +149,8 @@ func (n *Node) GetLeaves() []*Node {
 		}
 
 		if curr.isLeaf() {
-			children = append(children, curr)
+			curr.CreateRoom()
+			children = append(children, curr.Room)
 		} else {
 			if curr.Left != nil {
 				q.Push(curr.Left)
@@ -146,10 +159,6 @@ func (n *Node) GetLeaves() []*Node {
 				q.Push(curr.Right)
 			}
 		}
-	}
-
-	for _, child := range children {
-		CreateRoom(child)
 	}
 
 	return children

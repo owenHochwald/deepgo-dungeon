@@ -17,7 +17,7 @@ const (
 
 type Game struct {
 	TreeRoot *utils.Node
-	Rooms    []*utils.Node
+	Rooms    []*utils.Rect
 	Hallways []utils.Rect
 }
 
@@ -54,15 +54,15 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, node := range g.Rooms {
 		vector.StrokeRect(
 			screen,
-			float32(node.Container.X), float32(node.Container.Y),
-			float32(node.Container.W), float32(node.Container.H),
+			float32(node.X), float32(node.Y),
+			float32(node.W), float32(node.H),
 			1, color.RGBA{R: 50, G: 50, B: 50, A: 255}, false,
 		)
 
 		vector.FillRect(
 			screen,
-			float32(node.Room.X), float32(node.Room.Y),
-			float32(node.Room.W), float32(node.Room.H),
+			float32(node.X), float32(node.Y),
+			float32(node.W), float32(node.H),
 			color.White, false,
 		)
 	}
