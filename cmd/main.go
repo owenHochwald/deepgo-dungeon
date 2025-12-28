@@ -20,7 +20,7 @@ type Game struct {
 	TreeRoot *utils.Node
 	Rooms    []*utils.Rect
 	Hallways []utils.Rect
-	Grid     [][]utils.TileType
+	Grid     [][]utils.VisualTile
 	TileSet  *utils.TileSet
 }
 
@@ -42,13 +42,13 @@ func NewGame() *Game {
 	tiledHallways := utils.CreateTiledHallways(hallways)
 
 	tiles := utils.GenerateGrid(gridWidth, gridHeight, tiledRooms, tiledHallways)
-	utils.PrintGrid(tiles)
+	visualTiles := utils.GenerateVisualGrid(tiles, ts)
 
 	return &Game{
 		TreeRoot: n,
 		Rooms:    rooms,
 		Hallways: hallways,
-		Grid:     tiles,
+		Grid:     visualTiles,
 		TileSet:  ts,
 	}
 }

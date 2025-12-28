@@ -1,6 +1,9 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 type TileType int
 
@@ -98,4 +101,46 @@ func isAdjacentToNavigable(tiles [][]TileType, x, y, w, h int) bool {
 		}
 	}
 	return false
+}
+
+type VisualTile struct {
+	Type      TileType
+	Variant   int
+	Decorator int // -1 if no sprite, otherwise the index of the sprite
+}
+
+func GenerateVisualGrid(grid [][]TileType, ts *TileSet) [][]VisualTile {
+	height := len(grid)
+	width := len(grid[0])
+	visualGrid := make([][]VisualTile, height)
+
+	for y := 0; y < height; y++ {
+		visualGrid[y] = make([]VisualTile, width)
+		for x := 0; x < width; x++ {
+			vTile := VisualTile{
+				Type:    grid[y][x],
+				Variant: 0,
+			}
+
+			// Pre-calculate variants based on tiles
+			switch vTile.Type {
+			case Void:
+				vTile.Variant = rand.Intn(len(ts.Void))
+			case Floor, Hallway:
+				vTile.Variant = rand.Intn(len(ts.Room))
+				// 10% chance for a decorator
+				if rand.Float64() < 0.10 && len(ts.Sprite) > 0 {
+					vTile.Decorator = rand.Intn(len(ts.Sprite))
+				} else {
+					vTile.Decorator = -1
+				}
+			case Wall:
+				vTile.Variant = rand.Intn(len(ts.Wall))
+			case Door:
+				vTile.Variant = rand.Intn(len(ts.Door))
+			}
+			visualGrid[y][x] = vTile
+		}
+	}
+	return visualGrid
 }
