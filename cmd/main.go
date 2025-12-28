@@ -11,14 +11,17 @@ import (
 const (
 	screenWidth       = 320 * 4
 	screenHeight      = 240 * 4
-	minRoomSize       = 5
-	maxRecursionDepth = 5
+	minRoomSize       = 4 * utils.TileSize
+	maxRecursionDepth = 4
+	gridWidth         = screenWidth / utils.TileSize
+	gridHeight        = screenHeight / utils.TileSize
 )
 
 type Game struct {
 	TreeRoot *utils.Node
 	Rooms    []*utils.Rect
 	Hallways []utils.Rect
+	Grid     [][]utils.TileType
 }
 
 func NewGame() *Game {
@@ -30,10 +33,17 @@ func NewGame() *Game {
 	var hallways []utils.Rect
 	n.CreateHallways(&hallways)
 
+	tiledRooms := utils.CreateTiledRooms(rooms)
+	tiledHallways := utils.CreateTiledHallways(hallways)
+
+	tiles := utils.GenerateGrid(gridWidth, gridHeight, tiledRooms, tiledHallways)
+	utils.PrintGrid(tiles)
+
 	return &Game{
 		TreeRoot: n,
 		Rooms:    rooms,
 		Hallways: hallways,
+		Grid:     tiles,
 	}
 }
 

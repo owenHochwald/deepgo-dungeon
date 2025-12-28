@@ -3,8 +3,8 @@ package utils
 import "math/rand"
 
 const (
-	tileSize         = 14
-	hallwayVariation = 4
+	hallwayVariation = 0
+	TileSize         = 16
 )
 
 type Rect struct {
@@ -40,6 +40,32 @@ func GetCenter(x, y, w, h int) (int, int) {
 	return x + w/2, y + h/2
 }
 
+func CreateTiledRooms(rooms []*Rect) []*Rect {
+	tileRooms := make([]*Rect, len(rooms))
+	for i, room := range rooms {
+		tileRooms[i] = &Rect{
+			X: room.X / TileSize,
+			Y: room.Y / TileSize,
+			W: room.W / TileSize,
+			H: room.H / TileSize,
+		}
+	}
+	return tileRooms
+}
+
+func CreateTiledHallways(hallways []Rect) []Rect {
+	tileHallways := make([]Rect, len(hallways))
+	for i, hallway := range hallways {
+		tileHallways[i] = Rect{
+			X: hallway.X / TileSize,
+			Y: hallway.Y / TileSize,
+			W: hallway.W / TileSize,
+			H: hallway.H / TileSize,
+		}
+	}
+	return tileHallways
+}
+
 // Split splits the node into two children using random directions and sizes
 func (n *Node) Split(minSize, maxLevel int) bool {
 	// Base case
@@ -59,11 +85,11 @@ func (n *Node) Split(minSize, maxLevel int) bool {
 
 	// split between 30-70% of the container
 	if splitH {
-		splitPos := int(float32(n.Container.H) * percent)
+		splitPos := int(float32(n.Container.H)*percent) / TileSize * TileSize
 		n.Left = NewNode(n.Container.X, n.Container.Y, n.Container.W, splitPos, n.Level+1)
 		n.Right = NewNode(n.Container.X, n.Container.Y+splitPos, n.Container.W, n.Container.H-splitPos, n.Level+1)
 	} else {
-		splitPos := int(float32(n.Container.W) * percent)
+		splitPos := int(float32(n.Container.W)*percent) / TileSize * TileSize
 		n.Left = NewNode(n.Container.X, n.Container.Y, splitPos, n.Container.H, n.Level+1)
 		n.Right = NewNode(n.Container.X+splitPos, n.Container.Y, n.Container.W-splitPos, n.Container.H, n.Level+1)
 	}
@@ -76,16 +102,16 @@ func (n *Node) Split(minSize, maxLevel int) bool {
 }
 
 func (n *Node) CreateRoom() {
-	padding := 4
+	padding := TileSize // Use TileSize for padding
 
-	w := n.Container.W - padding*2
-	h := n.Container.H - padding*2
+	w := (n.Container.W - padding*2) / TileSize * TileSize
+	h := (n.Container.H - padding*2) / TileSize * TileSize
 
-	if w > 5 {
-		w = rand.Intn(w-5) + 5
+	if w > TileSize*2 {
+		w = (rand.Intn(w/TileSize-2) + 2) * TileSize
 	}
-	if h > 5 {
-		h = rand.Intn(h-5) + 5
+	if h > TileSize*2 {
+		h = (rand.Intn(h/TileSize-2) + 2) * TileSize
 	}
 
 	cX, cY := GetCenter(
@@ -95,12 +121,9 @@ func (n *Node) CreateRoom() {
 		n.Container.H-padding*2,
 	)
 
-	n.Room = &Rect{
-		X: 0,
-		Y: 0,
-		W: 0,
-		H: 0,
-	}
+	// Snap center to grid
+	cX = (cX / TileSize) * TileSize
+	cY = (cY / TileSize) * TileSize
 
 	n.Room = &Rect{
 		X: cX,
@@ -118,18 +141,22 @@ func (n *Node) CreateHallways(hallways *[]Rect) {
 	ax, ay := GetCenter(n.Left.Container.X, n.Left.Container.Y, n.Left.Container.W, n.Left.Container.H)
 	bx, by := GetCenter(n.Right.Container.X, n.Right.Container.Y, n.Right.Container.W, n.Right.Container.H)
 
+	// Align hallway centers to grid
+	ax, ay = (ax/TileSize)*TileSize, (ay/TileSize)*TileSize
+	bx, by = (bx/TileSize)*TileSize, (by/TileSize)*TileSize
+
 	width := bx - ax
 	if width < 0 {
-		*hallways = append(*hallways, Rect{bx, ay, -width + hallwayVariation, tileSize})
-	} else {
-		*hallways = append(*hallways, Rect{ax, ay, width + hallwayVariation, tileSize})
+		*hallways = append(*hallways, Rect{bx, ay, -width + TileSize, TileSize})
+	} else if width > 0 {
+		*hallways = append(*hallways, Rect{ax, ay, width + TileSize, TileSize})
 	}
 
 	height := by - ay
-	if height < 0 { // Handle bottom-to-top
-		*hallways = append(*hallways, Rect{bx, by, tileSize, -height + hallwayVariation})
-	} else {
-		*hallways = append(*hallways, Rect{bx, ay, tileSize, height + hallwayVariation})
+	if height < 0 {
+		*hallways = append(*hallways, Rect{bx, by, TileSize, -height + TileSize})
+	} else if height > 0 {
+		*hallways = append(*hallways, Rect{bx, ay, TileSize, height + TileSize})
 	}
 
 	n.Left.CreateHallways(hallways)
