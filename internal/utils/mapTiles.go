@@ -8,6 +8,8 @@ const (
 	Void TileType = iota
 	Floor
 	Door
+	Wall
+	Hallway
 )
 
 func PrintGrid(tiles [][]TileType) {
@@ -17,9 +19,11 @@ func PrintGrid(tiles [][]TileType) {
 	}
 
 	tileSymbols := map[TileType]string{
-		Void:  ".",
-		Floor: "#",
-		Door:  "D",
+		Void:    ".",
+		Floor:   "#",
+		Door:    "D",
+		Wall:    "W",
+		Hallway: "=",
 	}
 
 	for _, row := range tiles {
@@ -54,15 +58,44 @@ func GenerateGrid(width, height int, Rooms []*Rect, Hallways []Rect) [][]TileTyp
 		for y := hallway.Y; y < hallway.Y+hallway.H; y++ {
 			for x := hallway.X; x < hallway.X+hallway.W; x++ {
 				if y >= 0 && y < height && x >= 0 && x < width {
-					if tiles[y][x] == Floor {
-						tiles[y][x] = Door
-					} else {
-						tiles[y][x] = Floor
-					}
+					// TODO: Door Generation
+					//if tiles[y][x] == Floor {
+					//	tiles[y][x] = Door
+					//} else {
+					tiles[y][x] = Floor
+					//}
+				}
+			}
+		}
+	}
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			if tiles[y][x] == Void {
+				if isAdjacentToNavigable(tiles, x, y, width, height) {
+					tiles[y][x] = Wall
 				}
 			}
 		}
 	}
 
 	return tiles
+}
+
+func isAdjacentToNavigable(tiles [][]TileType, x, y, w, h int) bool {
+	for dy := -1; dy <= 1; dy++ {
+		for dx := -1; dx <= 1; dx++ {
+			if dx == 0 && dy == 0 {
+				continue
+			}
+			nx, ny := x+dx, y+dy
+			if nx >= 0 && nx < w && ny >= 0 && ny < h {
+				t := tiles[ny][nx]
+				if t == Floor || t == Hallway || t == Door {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
