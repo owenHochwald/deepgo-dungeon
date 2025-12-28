@@ -18,6 +18,8 @@ The generator follows a recursive process to ensure no two dungeons are the same
 4. **Connect:** Corridors are drawn to connect the centers of sibling nodes, ensuring every room is reachable.
 
 ![Separation Demo](public/demo1.png)
+![Separation Demo](public/demo2.png)
+
 
 ## Getting Started
 
