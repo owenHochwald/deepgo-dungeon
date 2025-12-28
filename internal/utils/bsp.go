@@ -66,6 +66,20 @@ func (n *Node) isLeaf() bool {
 	return n != nil && n.Left == nil && n.Right == nil
 }
 
+func CreateRoom(n *Node) {
+	padding := 4
+
+	w := n.Container.W - padding*2
+	h := n.Container.H - padding*2
+
+	n.Room = &Rect{
+		X: n.Container.X + padding,
+		Y: n.Container.Y + padding,
+		W: w,
+		H: h,
+	}
+}
+
 func (n *Node) GetLeaves() []*Node {
 	q := Queue{}
 	q.Push(n)
@@ -76,7 +90,7 @@ func (n *Node) GetLeaves() []*Node {
 		curr, err := q.Pop()
 
 		if err != nil {
-			return children
+			break
 		}
 
 		if curr.isLeaf() {
@@ -89,6 +103,10 @@ func (n *Node) GetLeaves() []*Node {
 				q.Push(curr.Right)
 			}
 		}
+	}
+
+	for _, child := range children {
+		CreateRoom(child)
 	}
 
 	return children

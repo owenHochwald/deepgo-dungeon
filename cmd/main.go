@@ -1,6 +1,5 @@
 package main
 
-//
 import (
 	"image/color"
 
@@ -50,18 +49,18 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		vector.FillRect(
 			screen,
 
-			float32(node.Container.X),
-			float32(node.Container.Y),
-			float32(node.Container.W),
-			float32(node.Container.H),
+			float32(node.Room.X),
+			float32(node.Room.Y),
+			float32(node.Room.W),
+			float32(node.Room.H),
 			color.White,
 			false)
 
 	}
 }
 
-func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 240
+func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return screenWidth, screenHeight
 }
 
 func main() {
