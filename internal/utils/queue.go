@@ -2,16 +2,16 @@ package utils
 
 import "fmt"
 
-type Queue []int
+type Queue []*Node
 
-func (q *Queue) Push(v int) {
+func (q *Queue) Push(v *Node) {
 	*q = append(*q, v)
 
 }
 
-func (q *Queue) Pop() (int, error) {
+func (q *Queue) Pop() (*Node, error) {
 	if len(*q) == 0 {
-		return 0, fmt.Errorf("queue is empty")
+		return nil, fmt.Errorf("queue is empty")
 	}
 	v := (*q)[0]
 

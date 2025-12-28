@@ -61,3 +61,35 @@ func (n *Node) Split(minSize, maxLevel int) bool {
 
 	return true
 }
+
+func (n *Node) isLeaf() bool {
+	return n != nil && n.Left == nil && n.Right == nil
+}
+
+func (n *Node) GetLeaves() []*Node {
+	q := Queue{}
+	q.Push(n)
+
+	var children []*Node
+
+	for len(q) > 0 {
+		curr, err := q.Pop()
+
+		if err != nil {
+			return children
+		}
+
+		if curr.isLeaf() {
+			children = append(children, curr)
+		} else {
+			if curr.Left != nil {
+				q.Push(curr.Left)
+			}
+			if curr.Right != nil {
+				q.Push(curr.Right)
+			}
+		}
+	}
+
+	return children
+}
