@@ -9,11 +9,12 @@ import (
 )
 
 type TileSet struct {
-	Void   []*ebiten.Image
-	Room   []*ebiten.Image
-	Wall   []*ebiten.Image
-	Door   []*ebiten.Image
-	Sprite []*ebiten.Image
+	Void       []*ebiten.Image
+	Room       []*ebiten.Image
+	Wall       []*ebiten.Image
+	Door       []*ebiten.Image
+	Sprite     []*ebiten.Image
+	WallSprite []*ebiten.Image
 }
 
 func LoadTileSet(basePath string) (*TileSet, error) {
@@ -54,6 +55,9 @@ func LoadTileSet(basePath string) (*TileSet, error) {
 	if ts.Sprite, err = loadDir("sprite"); err != nil {
 		return nil, err
 	}
+	if ts.WallSprite, err = loadDir("wall-sprite"); err != nil {
+		return nil, err
+	}
 
 	return ts, nil
 }
@@ -80,9 +84,17 @@ func DrawDungeon(screen *ebiten.Image, visualGrid [][]VisualTile, ts *TileSet) {
 				screen.DrawImage(img, op)
 			}
 
-			// Draw decorator on top
+			// Draw sprite decorator on top
 			if tile.Type == Floor && tile.Decorator != -1 {
 				sImg := ts.Sprite[tile.Decorator]
+				op := &ebiten.DrawImageOptions{}
+				op.GeoM.Translate(float64(x*TileSize), float64(y*TileSize))
+				screen.DrawImage(sImg, op)
+			}
+
+			// Draw wall sprite decorator on top
+			if tile.Type == Wall && tile.Decorator != -1 {
+				sImg := ts.WallSprite[tile.Decorator]
 				op := &ebiten.DrawImageOptions{}
 				op.GeoM.Translate(float64(x*TileSize), float64(y*TileSize))
 				screen.DrawImage(sImg, op)

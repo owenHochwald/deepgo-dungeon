@@ -136,6 +136,13 @@ func GenerateVisualGrid(grid [][]TileType, ts *TileSet) [][]VisualTile {
 				}
 			case Wall:
 				vTile.Variant = rand.Intn(len(ts.Wall))
+				// 15% chance for a decorator
+				if rand.Float64() < 0.15 && len(ts.WallSprite) > 0 {
+					vTile.Decorator = rand.Intn(len(ts.WallSprite))
+				} else {
+					vTile.Decorator = -1
+				}
+
 			case Door:
 				vTile.Variant = rand.Intn(len(ts.Door))
 			}
