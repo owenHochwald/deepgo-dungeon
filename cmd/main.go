@@ -46,17 +46,21 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	children := g.TreeRoot.GetLeaves()
 
 	for _, node := range children {
+		vector.StrokeRect(
+			screen,
+			float32(node.Container.X), float32(node.Container.Y),
+			float32(node.Container.W), float32(node.Container.H),
+			1, color.RGBA{R: 50, G: 50, B: 50, A: 255}, false,
+		)
+
 		vector.FillRect(
 			screen,
-
-			float32(node.Room.X),
-			float32(node.Room.Y),
-			float32(node.Room.W),
-			float32(node.Room.H),
-			color.White,
-			false)
-
+			float32(node.Room.X), float32(node.Room.Y),
+			float32(node.Room.W), float32(node.Room.H),
+			color.White, false,
+		)
 	}
+
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

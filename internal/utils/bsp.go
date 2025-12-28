@@ -66,6 +66,11 @@ func (n *Node) isLeaf() bool {
 	return n != nil && n.Left == nil && n.Right == nil
 }
 
+func (n *Node) GetCenter() (float64, float64) {
+	return float64(n.Container.X + n.Container.W/2), float64(n.Container.Y + n.Container.H/2)
+
+}
+
 func CreateRoom(n *Node) {
 	padding := 4
 
