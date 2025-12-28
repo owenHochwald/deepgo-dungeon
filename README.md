@@ -17,6 +17,8 @@ The generator follows a recursive process to ensure no two dungeons are the same
 3. **Carve:** Once the tree reaches its maximum depth, a room is carved inside each leaf container with randomized padding.
 4. **Connect:** Corridors are drawn to connect the centers of sibling nodes, ensuring every room is reachable.
 
+![Separation Demo](public/demo1.png)
+
 ## Getting Started
 
 ### Installation
