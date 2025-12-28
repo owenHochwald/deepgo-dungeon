@@ -27,6 +27,15 @@ func NewNode(x, y, w, h, level int) *Node {
 	}
 }
 
+func (n *Node) isLeaf() bool {
+	return n != nil && n.Left == nil && n.Right == nil
+}
+
+func (n *Node) GetCenter() (int, int) {
+	return n.Container.X + n.Container.W/2, n.Container.Y + n.Container.H/2
+
+}
+
 // Split splits the node into two children using random directions and sizes
 func (n *Node) Split(minSize, maxLevel int) bool {
 	// Base case
@@ -62,15 +71,6 @@ func (n *Node) Split(minSize, maxLevel int) bool {
 	return true
 }
 
-func (n *Node) isLeaf() bool {
-	return n != nil && n.Left == nil && n.Right == nil
-}
-
-func (n *Node) GetCenter() (int, int) {
-	return n.Container.X + n.Container.W/2, n.Container.Y + n.Container.H/2
-
-}
-
 func CreateRoom(n *Node) {
 	padding := 4
 
@@ -93,6 +93,31 @@ func CreateRoom(n *Node) {
 	}
 }
 
+func (n *Node) CreateHallways(hallways *[]Rect) {
+	if n.Left == nil || n.Right == nil {
+		return
+	}
+
+	ax, ay := n.Left.GetCenter()
+	bx, by := n.Right.GetCenter()
+
+	width := bx - ax
+	if width < 0 {
+		*hallways = append(*hallways, Rect{bx, ay, -width + 6, 6})
+	} else {
+		*hallways = append(*hallways, Rect{ax, ay, width + 6, 6})
+	}
+
+	height := by - ay
+	if height < 0 { // Handle bottom-to-top
+		*hallways = append(*hallways, Rect{bx, by, 6, -height + 6})
+	} else {
+		*hallways = append(*hallways, Rect{bx, ay, 6, height + 6})
+	}
+
+	n.Left.CreateHallways(hallways)
+	n.Right.CreateHallways(hallways)
+}
 func (n *Node) GetLeaves() []*Node {
 	q := Queue{}
 	q.Push(n)
