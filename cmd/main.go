@@ -1,23 +1,28 @@
 package main
 
+//
 import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"github.com/owenHochwald/deepgo-dungeon/internal/utils"
 )
 
 const (
 	screenWidth  = 320 * 2
 	screenHeight = 240 * 2
-	tileSize     = 16
 )
 
 type Game struct {
 	dungeonMap [][]int // 0 -> Wall, 1 -> Floor
+	TreeRoot   *utils.Node
 }
 
 func NewGame() *Game {
+	n := utils.NewNode(0, 0, screenWidth, screenHeight, 0)
+	n.Split(10, 3)
+
 	return &Game{
 		dungeonMap: [][]int{
 			{0, 0, 0, 0, 1, 0, 0, 1, 0, 0},
@@ -31,6 +36,7 @@ func NewGame() *Game {
 			{0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
 			{1, 0, 0, 1, 0, 0, 1, 0, 0, 0},
 		},
+		TreeRoot: n,
 	}
 }
 
@@ -38,20 +44,19 @@ func (g *Game) Update() error {
 	return nil
 }
 func (g *Game) Draw(screen *ebiten.Image) {
-	for y, row := range g.dungeonMap {
-		for x, tile := range row {
-			if tile == 1 {
-				vector.FillRect(
-					screen,
-					float32(x*tileSize),
-					float32(y*tileSize),
-					tileSize,
-					tileSize,
-					color.White,
-					false,
-				)
-			}
-		}
+	children := g.TreeRoot.GetLeaves()
+
+	for _, node := range children {
+		vector.FillRect(
+			screen,
+
+			float32(node.Container.X),
+			float32(node.Container.Y),
+			float32(node.Container.W),
+			float32(node.Container.H),
+			color.White,
+			false)
+
 	}
 }
 
