@@ -16,11 +16,13 @@ const (
 type Game struct {
 	dungeonMap [][]int // 0 -> Wall, 1 -> Floor
 	TreeRoot   *utils.Node
+	Rooms      []*utils.Node
 }
 
 func NewGame() *Game {
 	n := utils.NewNode(0, 0, screenWidth, screenHeight, 0)
 	n.Split(10, 3)
+	rooms := n.GetLeaves()
 
 	return &Game{
 		dungeonMap: [][]int{
@@ -36,6 +38,7 @@ func NewGame() *Game {
 			{1, 0, 0, 1, 0, 0, 1, 0, 0, 0},
 		},
 		TreeRoot: n,
+		Rooms:    rooms,
 	}
 }
 
@@ -43,9 +46,8 @@ func (g *Game) Update() error {
 	return nil
 }
 func (g *Game) Draw(screen *ebiten.Image) {
-	children := g.TreeRoot.GetLeaves()
 
-	for _, node := range children {
+	for _, node := range g.Rooms {
 		vector.StrokeRect(
 			screen,
 			float32(node.Container.X), float32(node.Container.Y),

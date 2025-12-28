@@ -66,8 +66,8 @@ func (n *Node) isLeaf() bool {
 	return n != nil && n.Left == nil && n.Right == nil
 }
 
-func (n *Node) GetCenter() (float64, float64) {
-	return float64(n.Container.X + n.Container.W/2), float64(n.Container.Y + n.Container.H/2)
+func (n *Node) GetCenter() (int, int) {
+	return n.Container.X + n.Container.W/2, n.Container.Y + n.Container.H/2
 
 }
 
@@ -77,9 +77,17 @@ func CreateRoom(n *Node) {
 	w := n.Container.W - padding*2
 	h := n.Container.H - padding*2
 
+	if w > 5 {
+		w = rand.Intn(w-5) + 5
+	}
+	if h > 5 {
+		h = rand.Intn(h-5) + 5
+	}
+
+	cX, cY := n.GetCenter()
 	n.Room = &Rect{
-		X: n.Container.X + padding,
-		Y: n.Container.Y + padding,
+		X: cX,
+		Y: cY,
 		W: w,
 		H: h,
 	}
