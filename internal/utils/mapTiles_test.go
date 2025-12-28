@@ -33,7 +33,7 @@ func TestGenerateGrid(t *testing.T) {
 			},
 		},
 		{
-			name: "grid with single room and hallway",
+			name: "grid with room and hallway creating door at intersection",
 			args: args{
 				width:  10,
 				height: 8,
@@ -41,14 +41,14 @@ func TestGenerateGrid(t *testing.T) {
 					{X: 2, Y: 2, W: 3, H: 3},
 				},
 				Hallways: []Rect{
-					{X: 5, Y: 3, W: 3, H: 1},
+					{X: 4, Y: 3, W: 4, H: 1},
 				},
 			},
 			want: [][]TileType{
 				{Void, Void, Void, Void, Void, Void, Void, Void, Void, Void},
 				{Void, Void, Void, Void, Void, Void, Void, Void, Void, Void},
 				{Void, Void, Floor, Floor, Floor, Void, Void, Void, Void, Void},
-				{Void, Void, Floor, Floor, Floor, Floor, Floor, Floor, Void, Void},
+				{Void, Void, Floor, Floor, Door, Floor, Floor, Floor, Void, Void},
 				{Void, Void, Floor, Floor, Floor, Void, Void, Void, Void, Void},
 				{Void, Void, Void, Void, Void, Void, Void, Void, Void, Void},
 				{Void, Void, Void, Void, Void, Void, Void, Void, Void, Void},
